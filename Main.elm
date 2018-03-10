@@ -1,39 +1,47 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Svg exposing (..)
-import Svg.Attributes exposing (..)
-import Time exposing (Time, second)
+import Svg
+import Svg.Attributes
+import Time
 
 
 type alias Model =
-    { time : Time }
+    { left : Int
+    , top : Int
+    , direction : Direction
+    , moving : Bool
+    , animationFrame : Int
+    }
+
+
+type Direction
+    = Up
+    | Down
+    | Left
+    | Right
+
+
+type alias Preferences =
+    { speed : Int
+    , width : Int
+    , height : Int
+    }
 
 
 type Msg
-    = Tick Time
+    = Tick Time.Time
 
 
 init =
-    ( 0, Cmd.none )
-
-
-getPosition n =
-    case n of
-        0 ->
-            square 10 10 10
-
-        1 ->
-            square 10 20 10
-
-        2 ->
-            square 20 20 10
-
-        3 ->
-            square 20 10 10
-
-        n ->
-            getPosition (n - 4)
+    ( { left = 10
+      , top = 10
+      , direction = Down
+      , animationFrame = 0
+      , moving = True
+      }
+    , Cmd.none
+    )
 
 
 square left top size =
@@ -41,21 +49,42 @@ square left top size =
         f x y =
             toString (left + x * size) ++ "," ++ toString (top + y * size)
     in
-    points (f 0 0 ++ " " ++ f 0 1 ++ " " ++ f 1 1 ++ " " ++ f 1 0)
+    Svg.Attributes.points (f 0 0 ++ " " ++ f 0 1 ++ " " ++ f 1 1 ++ " " ++ f 1 0)
 
 
-view n =
-    svg
-        [ version "1.1", x "0", y "0", viewBox "0 0 100 100" ]
-        [ polygon [ fill "333333", getPosition n ] [] ]
+view : Model -> Html.Html msg
+view { left, top } =
+    Svg.svg
+        [ Svg.Attributes.version "1.1", Svg.Attributes.x "0", Svg.Attributes.y "0", Svg.Attributes.viewBox "0 0 100 100" ]
+        [ Svg.polygon [ Svg.Attributes.fill "333333", square left top 10 ] [] ]
 
 
 subscriptions model =
-    Time.every second Tick
+    Time.every (Time.second / 30) Tick
 
 
-update (Tick time) n =
-    ( n + 1, Cmd.none )
+move model =
+    case model.direction of
+        Up ->
+            { model | top = model.top - 1 }
+
+        Down ->
+            { model | top = model.top + 1 }
+
+        Right ->
+            { model | left = model.left + 1 }
+
+        Left ->
+            { model | left = model.left - 1 }
+
+
+update (Tick time) model =
+    case model.moving of
+        True ->
+            ( move model, Cmd.none )
+
+        False ->
+            ( model, Cmd.none )
 
 
 main =
