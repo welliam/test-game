@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Keyboard
 import Svg
 import Svg.Attributes
 import Time
@@ -31,6 +32,8 @@ type alias Preferences =
 
 type Msg
     = Tick Time.Time
+    | KeyDown Keyboard.KeyCode
+    | KeyUp Keyboard.KeyCode
 
 
 init =
@@ -38,7 +41,7 @@ init =
       , top = 10
       , direction = Down
       , animationFrame = 0
-      , moving = True
+      , moving = False
       }
     , Cmd.none
     )
@@ -55,12 +58,25 @@ square left top size =
 view : Model -> Html.Html msg
 view { left, top } =
     Svg.svg
-        [ Svg.Attributes.version "1.1", Svg.Attributes.x "0", Svg.Attributes.y "0", Svg.Attributes.viewBox "0 0 100 100" ]
-        [ Svg.polygon [ Svg.Attributes.fill "333333", square left top 10 ] [] ]
+        [ Svg.Attributes.version "1.1"
+        , Svg.Attributes.x "0"
+        , Svg.Attributes.y "0"
+        , Svg.Attributes.viewBox "0 0 100 100"
+        ]
+        [ Svg.polygon
+            [ Svg.Attributes.fill "333333"
+            , square left top 3
+            ]
+            []
+        ]
 
 
 subscriptions model =
-    Time.every (Time.second / 30) Tick
+    Sub.batch
+        [ Time.every (Time.second / 30) Tick
+        , Keyboard.downs KeyDown
+        , Keyboard.ups KeyUp
+        ]
 
 
 move model =
@@ -78,13 +94,43 @@ move model =
             { model | left = model.left - 1 }
 
 
-update (Tick time) model =
-    case model.moving of
-        True ->
-            ( move model, Cmd.none )
+handleKeyUp model _ =
+    { model | moving = False }
 
-        False ->
-            ( model, Cmd.none )
+
+handleKeyDown model code =
+    case code of
+        37 ->
+            { model | moving = True, direction = Left }
+
+        38 ->
+            { model | moving = True, direction = Up }
+
+        39 ->
+            { model | moving = True, direction = Right }
+
+        40 ->
+            { model | moving = True, direction = Down }
+
+        _ ->
+            model
+
+
+update msg model =
+    case msg of
+        Tick time ->
+            case model.moving of
+                True ->
+                    ( move model, Cmd.none )
+
+                False ->
+                    ( model, Cmd.none )
+
+        KeyUp msg ->
+            ( handleKeyUp model msg, Cmd.none )
+
+        KeyDown msg ->
+            ( handleKeyDown model msg, Cmd.none )
 
 
 main =
