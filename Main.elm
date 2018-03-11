@@ -10,8 +10,8 @@ import Time
 type alias Model =
     { left : Int
     , top : Int
+    , inputs : Inputs
     , direction : Direction
-    , moving : Bool
     , animationFrame : Int
     }
 
@@ -23,10 +23,11 @@ type Direction
     | Right
 
 
-type alias Preferences =
-    { speed : Int
-    , width : Int
-    , height : Int
+type alias Inputs =
+    { left : Bool
+    , right : Bool
+    , up : Bool
+    , down : Bool
     }
 
 
@@ -36,12 +37,20 @@ type Msg
     | KeyUp Keyboard.KeyCode
 
 
+initialInputs =
+    { left = False
+    , right = False
+    , up = False
+    , down = False
+    }
+
+
 init =
     ( { left = 10
       , top = 10
       , direction = Down
       , animationFrame = 0
-      , moving = False
+      , inputs = initialInputs
       }
     , Cmd.none
     )
@@ -94,32 +103,81 @@ move model =
             { model | left = model.left - 1 }
 
 
-handleKeyUp model _ =
-    { model | moving = False }
+resetDirection model =
+    let
+        newDirection =
+            if model.inputs.left then
+                Left
+            else if model.inputs.right then
+                Right
+            else if model.inputs.up then
+                Up
+            else if model.inputs.down then
+                Down
+            else
+                model.direction
+    in
+    { model | direction = newDirection }
+
+
+handleKeyUp model code =
+    let
+        inputs =
+            model.inputs
+    in
+    resetDirection
+        (case code of
+            37 ->
+                { model | inputs = { inputs | left = False } }
+
+            38 ->
+                { model | inputs = { inputs | up = False } }
+
+            39 ->
+                { model | inputs = { inputs | right = False } }
+
+            40 ->
+                { model | inputs = { inputs | down = False } }
+
+            _ ->
+                model
+        )
 
 
 handleKeyDown model code =
+    let
+        inputs =
+            model.inputs
+    in
     case code of
         37 ->
-            { model | moving = True, direction = Left }
+            { model | inputs = { inputs | left = True }, direction = Left }
 
         38 ->
-            { model | moving = True, direction = Up }
+            { model | inputs = { inputs | up = True }, direction = Up }
 
         39 ->
-            { model | moving = True, direction = Right }
+            { model | inputs = { inputs | right = True }, direction = Right }
 
         40 ->
-            { model | moving = True, direction = Down }
+            { model | inputs = { inputs | down = True }, direction = Down }
 
         _ ->
             model
 
 
+isMoving model =
+    let
+        inputs =
+            model.inputs
+    in
+    inputs.left || inputs.right || inputs.up || inputs.down
+
+
 update msg model =
     case msg of
         Tick time ->
-            case model.moving of
+            case isMoving model of
                 True ->
                     ( move model, Cmd.none )
 
