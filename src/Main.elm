@@ -37,6 +37,7 @@ type Msg
     | KeyUp Keyboard.KeyCode
 
 
+initialInputs : Inputs
 initialInputs =
     { left = False
     , right = False
@@ -45,6 +46,7 @@ initialInputs =
     }
 
 
+init : ( Model, Cmd msg )
 init =
     ( { left = 10
       , top = 10
@@ -56,6 +58,7 @@ init =
     )
 
 
+square : Int -> Int -> Int -> Svg.Attribute msg
 square left top size =
     let
         f x y =
@@ -65,21 +68,28 @@ square left top size =
 
 
 view : Model -> Html.Html msg
-view { left, top } =
-    Svg.svg
-        [ Svg.Attributes.version "1.1"
-        , Svg.Attributes.x "0"
-        , Svg.Attributes.y "0"
-        , Svg.Attributes.viewBox "0 0 100 100"
-        ]
-        [ Svg.polygon
-            [ Svg.Attributes.fill "333333"
-            , square left top 3
+view { left, top, direction } =
+    div []
+        [ div [] [ text (toString direction) ]
+        , div [] [ text "x:", text (toString left) ]
+        , div [] [ text "y:", text (toString top) ]
+        , Svg.svg
+            [ Svg.Attributes.version "1.1"
+            , Svg.Attributes.x "0"
+            , Svg.Attributes.y "0"
+            , Svg.Attributes.viewBox "0 0 100 100"
+            , Svg.Attributes.style "border: solid thin;"
             ]
-            []
+            [ Svg.polygon
+                [ Svg.Attributes.fill "333333"
+                , square left top 3
+                ]
+                []
+            ]
         ]
 
 
+subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Time.every (Time.second / 30) Tick
@@ -88,6 +98,7 @@ subscriptions model =
         ]
 
 
+withinLimits : Int -> Int -> Int
 withinLimits upperLimit value =
     if value < 0 then
         0
@@ -97,6 +108,7 @@ withinLimits upperLimit value =
         value
 
 
+move : Model -> Model
 move model =
     case model.direction of
         Up ->
@@ -112,6 +124,7 @@ move model =
             { model | left = withinLimits 50 (model.left - 1) }
 
 
+resetDirection : Model -> Model
 resetDirection model =
     let
         newDirection =
@@ -129,6 +142,7 @@ resetDirection model =
     { model | direction = newDirection }
 
 
+handleKeyUp : Model -> Int -> Model
 handleKeyUp model code =
     let
         inputs =
@@ -153,6 +167,7 @@ handleKeyUp model code =
         )
 
 
+handleKeyDown : Model -> Int -> Model
 handleKeyDown model code =
     let
         inputs =
@@ -175,6 +190,7 @@ handleKeyDown model code =
             model
 
 
+isMoving : Model -> Bool
 isMoving model =
     let
         { left, right, up, down } =
@@ -200,6 +216,7 @@ update msg model =
             ( handleKeyDown model msg, Cmd.none )
 
 
+main : Program Never Model Msg
 main =
     Html.program
         { init = init
