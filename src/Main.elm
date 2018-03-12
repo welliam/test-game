@@ -177,10 +177,10 @@ handleKeyDown model code =
 
 isMoving model =
     let
-        inputs =
+        { left, right, up, down } =
             model.inputs
     in
-    inputs.left || inputs.right || inputs.up || inputs.down
+    left || right || up || down
 
 
 update msg model =
