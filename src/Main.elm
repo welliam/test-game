@@ -88,19 +88,28 @@ subscriptions model =
         ]
 
 
+withinLimits upperLimit value =
+    if value < 0 then
+        0
+    else if value > upperLimit then
+        upperLimit
+    else
+        value
+
+
 move model =
     case model.direction of
         Up ->
-            { model | top = model.top - 1 }
+            { model | top = withinLimits 50 (model.top - 1) }
 
         Down ->
-            { model | top = model.top + 1 }
+            { model | top = withinLimits 50 (model.top + 1) }
 
         Right ->
-            { model | left = model.left + 1 }
+            { model | left = withinLimits 50 (model.left + 1) }
 
         Left ->
-            { model | left = model.left - 1 }
+            { model | left = withinLimits 50 (model.left - 1) }
 
 
 resetDirection model =
