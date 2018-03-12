@@ -112,16 +112,16 @@ move : Model -> Model
 move model =
     case model.direction of
         Up ->
-            { model | top = withinLimits 50 (model.top - 1) }
+            { model | top = withinLimits 97 (model.top - 1) }
 
         Down ->
-            { model | top = withinLimits 50 (model.top + 1) }
+            { model | top = withinLimits 97 (model.top + 1) }
 
         Right ->
-            { model | left = withinLimits 50 (model.left + 1) }
+            { model | left = withinLimits 97 (model.left + 1) }
 
         Left ->
-            { model | left = withinLimits 50 (model.left - 1) }
+            { model | left = withinLimits 97 (model.left - 1) }
 
 
 resetDirection : Model -> Model
