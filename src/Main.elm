@@ -12,7 +12,6 @@ type alias Model =
     , top : Int
     , inputs : Inputs
     , direction : Direction
-    , animationFrame : Int
     }
 
 
@@ -51,7 +50,6 @@ init =
     ( { left = 10
       , top = 10
       , direction = Down
-      , animationFrame = 0
       , inputs = initialInputs
       }
     , Cmd.none
