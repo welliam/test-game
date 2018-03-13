@@ -46,6 +46,11 @@ movementFrames =
     3
 
 
+size : Int
+size =
+    3
+
+
 initialInputs : Inputs
 initialInputs =
     { left = False
@@ -84,11 +89,11 @@ getWalkingPixels from to walkingFrame =
         top =
             (toFloat from.top * fraction + toFloat to.top * (1 - fraction)) / 2
     in
-    ( left * 3, top * 3 )
+    ( left * toFloat (size * 2), top * toFloat (size * 2) )
 
 
-square : ( Float, Float ) -> Int -> Svg.Attribute msg
-square ( positionX, positionY ) size =
+square : ( Float, Float ) -> Svg.Attribute msg
+square ( positionX, positionY ) =
     let
         f x y =
             toString (positionX + toFloat (x * size))
@@ -125,7 +130,7 @@ view model =
             ]
             [ Svg.polygon
                 [ Svg.Attributes.fill "333333"
-                , square (getWalkingPixels movingFrom position walkingFrame) 3
+                , square (getWalkingPixels movingFrom position walkingFrame)
                 ]
                 []
             ]
