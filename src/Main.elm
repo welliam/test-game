@@ -8,11 +8,16 @@ import Time
 
 
 type alias Model =
-    { left : Int
-    , top : Int
+    { position : Position
+    , movingFrom : Position
     , inputs : Inputs
     , direction : Direction
+    , walkingFrame : Int
     }
+
+
+type alias Position =
+    { left : Int, top : Int }
 
 
 type Direction
@@ -45,32 +50,62 @@ initialInputs =
     }
 
 
+initialPosition : Position
+initialPosition =
+    { top = 1, left = 3 }
+
+
 init : ( Model, Cmd msg )
 init =
-    ( { left = 10
-      , top = 10
+    ( { position = initialPosition
+      , movingFrom = initialPosition
       , direction = Down
       , inputs = initialInputs
+      , walkingFrame = 0
       }
     , Cmd.none
     )
 
 
-square : Int -> Int -> Int -> Svg.Attribute msg
-square left top size =
+getPixelX : Position -> Int
+getPixelX { left } =
+    left * 3
+
+
+getPixelY : Position -> Int
+getPixelY { top } =
+    top * 3
+
+
+square : Position -> Int -> Svg.Attribute msg
+square position size =
     let
         f x y =
-            toString (left + x * size) ++ "," ++ toString (top + y * size)
+            toString (getPixelX position + x * size)
+                ++ ","
+                ++ toString (getPixelY position + y * size)
     in
-    Svg.Attributes.points (f 0 0 ++ " " ++ f 0 1 ++ " " ++ f 1 1 ++ " " ++ f 1 0)
+    Svg.Attributes.points
+        (f 0 0
+            ++ " "
+            ++ f 0 1
+            ++ " "
+            ++ f 1 1
+            ++ " "
+            ++ f 1 0
+        )
 
 
 view : Model -> Html.Html msg
-view { left, top, direction } =
+view model =
+    let
+        { position, direction, movingFrom, walkingFrame } =
+            model
+    in
     div []
-        [ div [] [ text (toString direction) ]
-        , div [] [ text "x:", text (toString left) ]
-        , div [] [ text "y:", text (toString top) ]
+        [ div [] [ text ("position: " ++ toString position) ]
+        , div [] [ text ("movingFrom: " ++ toString movingFrom) ]
+        , div [] [ text ("walkingFrame: " ++ toString walkingFrame) ]
         , Svg.svg
             [ Svg.Attributes.version "1.1"
             , Svg.Attributes.x "0"
@@ -80,7 +115,7 @@ view { left, top, direction } =
             ]
             [ Svg.polygon
                 [ Svg.Attributes.fill "333333"
-                , square left top 3
+                , square position 3
                 ]
                 []
             ]
@@ -106,20 +141,9 @@ withinLimits upperLimit value =
         value
 
 
-move : Model -> Model
-move model =
-    case model.direction of
-        Up ->
-            { model | top = withinLimits 97 (model.top - 1) }
-
-        Down ->
-            { model | top = withinLimits 97 (model.top + 1) }
-
-        Right ->
-            { model | left = withinLimits 97 (model.left + 1) }
-
-        Left ->
-            { model | left = withinLimits 97 (model.left - 1) }
+decrementWalking : Model -> Model
+decrementWalking model =
+    { model | walkingFrame = model.walkingFrame - 1 }
 
 
 resetDirection : Model -> Model
@@ -188,8 +212,33 @@ handleKeyDown model code =
             model
 
 
-isMoving : Model -> Bool
-isMoving model =
+getMovingTo : Direction -> Position -> Position
+getMovingTo direction { top, left } =
+    case direction of
+        Up ->
+            { top = top - 1, left = left }
+
+        Down ->
+            { top = top + 1, left = left }
+
+        Right ->
+            { top = top, left = left + 1 }
+
+        Left ->
+            { top = top, left = left - 1 }
+
+
+startMoving : Model -> Model
+startMoving model =
+    { model
+        | walkingFrame = 10
+        , movingFrom = model.position
+        , position = getMovingTo model.direction model.position
+    }
+
+
+willMove : Model -> Bool
+willMove model =
     let
         { left, right, up, down } =
             model.inputs
@@ -197,15 +246,26 @@ isMoving model =
     left || right || up || down
 
 
+isMoving : Model -> Bool
+isMoving model =
+    model.walkingFrame /= 0
+
+
+handleMovements : Model -> Model
+handleMovements model =
+    if isMoving model then
+        decrementWalking model
+    else if willMove model then
+        startMoving model
+    else
+        model
+
+
+update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         Tick time ->
-            case isMoving model of
-                True ->
-                    ( move model, Cmd.none )
-
-                False ->
-                    ( model, Cmd.none )
+            ( handleMovements model, Cmd.none )
 
         KeyUp msg ->
             ( handleKeyUp model msg, Cmd.none )
