@@ -51,6 +51,7 @@ view model =
         [ div [] [ text ("position: " ++ toString position) ]
         , div [] [ text ("movingFrom: " ++ toString movingFrom) ]
         , div [] [ text ("walkingFrame: " ++ toString walkingFrame) ]
+        , div [] [ text ("direction: " ++ toString direction) ]
         , Svg.svg
             [ Svg.Attributes.version "1.1"
             , Svg.Attributes.x "0"
