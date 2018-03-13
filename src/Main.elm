@@ -41,6 +41,11 @@ type Msg
     | KeyUp Keyboard.KeyCode
 
 
+movementFrames : Int
+movementFrames =
+    3
+
+
 initialInputs : Inputs
 initialInputs =
     { left = False
@@ -67,23 +72,28 @@ init =
     )
 
 
-getPixelX : Position -> Int
-getPixelX { left } =
-    left * 3
+getWalkingPixels : Position -> Position -> Int -> ( Float, Float )
+getWalkingPixels from to walkingFrame =
+    let
+        fraction =
+            toFloat walkingFrame / toFloat movementFrames
+
+        left =
+            (toFloat from.left * fraction + toFloat to.left * (1 - fraction)) / 2
+
+        top =
+            (toFloat from.top * fraction + toFloat to.top * (1 - fraction)) / 2
+    in
+    ( left * 3, top * 3 )
 
 
-getPixelY : Position -> Int
-getPixelY { top } =
-    top * 3
-
-
-square : Position -> Int -> Svg.Attribute msg
-square position size =
+square : ( Float, Float ) -> Int -> Svg.Attribute msg
+square ( positionX, positionY ) size =
     let
         f x y =
-            toString (getPixelX position + x * size)
+            toString (positionX + toFloat (x * size))
                 ++ ","
-                ++ toString (getPixelY position + y * size)
+                ++ toString (positionY + toFloat (y * size))
     in
     Svg.Attributes.points
         (f 0 0
@@ -115,7 +125,7 @@ view model =
             ]
             [ Svg.polygon
                 [ Svg.Attributes.fill "333333"
-                , square position 3
+                , square (getWalkingPixels movingFrom position walkingFrame) 3
                 ]
                 []
             ]
@@ -230,8 +240,12 @@ getMovingTo direction { top, left } =
 
 startMoving : Model -> Model
 startMoving model =
-    { model
-        | walkingFrame = 10
+    let
+        moved =
+            decrementWalking model
+    in
+    { moved
+        | walkingFrame = movementFrames
         , movingFrom = model.position
         , position = getMovingTo model.direction model.position
     }
