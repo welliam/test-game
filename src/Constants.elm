@@ -5,12 +5,12 @@ import Model exposing (..)
 
 movementFrames : Int
 movementFrames =
-    3
+    6
 
 
 size : Int
 size =
-    3
+    5
 
 
 initialInputs : Inputs
