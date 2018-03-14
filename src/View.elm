@@ -57,7 +57,7 @@ view model =
             , Svg.Attributes.x "0"
             , Svg.Attributes.y "0"
             , Svg.Attributes.viewBox "0 0 100 100"
-            , Svg.Attributes.style "width: 680px; border: solid thin"
+            , Svg.Attributes.style "width: 340px; border: solid thin"
             ]
             [ Svg.polygon
                 [ Svg.Attributes.fill "333333"
