@@ -72,25 +72,21 @@ handleKeyDown model code =
         37 ->
             { model
                 | inputs = { inputs | left = True }
-                , direction = Left
             }
 
         38 ->
             { model
                 | inputs = { inputs | up = True }
-                , direction = Up
             }
 
         39 ->
             { model
                 | inputs = { inputs | right = True }
-                , direction = Right
             }
 
         40 ->
             { model
                 | inputs = { inputs | down = True }
-                , direction = Down
             }
 
         _ ->
@@ -145,9 +141,9 @@ handleMovements model =
     if isMoving model then
         decrementWalking model
     else if willMove model then
-        startMoving model
+        startMoving (resetDirection model)
     else
-        model
+        resetDirection model
 
 
 update : Msg -> Model -> ( Model, Cmd msg )

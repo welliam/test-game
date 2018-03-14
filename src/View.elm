@@ -48,10 +48,11 @@ view model =
             model
     in
     div []
-        [ div [] [ text ("position: " ++ toString position) ]
-        , div [] [ text ("movingFrom: " ++ toString movingFrom) ]
-        , div [] [ text ("walkingFrame: " ++ toString walkingFrame) ]
-        , div [] [ text ("direction: " ++ toString direction) ]
+        [ div [] [ text ("position: " ++ toString model.position) ]
+        , div [] [ text ("movingFrom: " ++ toString model.movingFrom) ]
+        , div [] [ text ("walkingFrame: " ++ toString model.walkingFrame) ]
+        , div [] [ text ("direction: " ++ toString model.direction) ]
+        , div [] [ text ("inputs: " ++ toString model.inputs) ]
         , Svg.svg
             [ Svg.Attributes.version "1.1"
             , Svg.Attributes.x "0"
