@@ -1,4 +1,4 @@
-module Constants exposing (init, movementFrames, size)
+module Constants exposing (framesPerSecond, init, movementFrames, size)
 
 import Model exposing (..)
 
@@ -25,6 +25,11 @@ initialInputs =
 initialPosition : Position
 initialPosition =
     { top = 1, left = 3 }
+
+
+framesPerSecond : Float
+framesPerSecond =
+    30
 
 
 init : ( Model, Cmd msg )
