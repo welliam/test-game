@@ -16,12 +16,19 @@ withinLimits upperLimit value =
 
 decrementWalking : Model -> Model
 decrementWalking model =
-    { model | walkingFrame = model.walkingFrame - 1 }
+    let
+        player =
+            model.player
+    in
+    { model | player = { player | walkingFrame = player.walkingFrame - 1 } }
 
 
 resetDirection : Model -> Model
 resetDirection model =
     let
+        player =
+            model.player
+
         newDirection =
             if model.inputs.left then
                 Left
@@ -32,9 +39,9 @@ resetDirection model =
             else if model.inputs.down then
                 Down
             else
-                model.direction
+                model.player.direction
     in
-    { model | direction = newDirection }
+    { model | player = { player | direction = newDirection } }
 
 
 handleKeyUp : Model -> Int -> Model
@@ -112,11 +119,17 @@ startMoving model =
     let
         moved =
             decrementWalking model
+
+        player =
+            moved.player
     in
     { moved
-        | walkingFrame = Constants.movementFrames
-        , movingFrom = model.position
-        , position = getMovingTo model.direction model.position
+        | player =
+            { player
+                | walkingFrame = Constants.movementFrames
+                , movingFrom = player.position
+                , position = getMovingTo player.direction player.position
+            }
     }
 
 
@@ -131,7 +144,7 @@ willMove model =
 
 isMoving : Model -> Bool
 isMoving model =
-    model.walkingFrame /= 0
+    model.player.walkingFrame /= 0
 
 
 handleMovements : Model -> Model

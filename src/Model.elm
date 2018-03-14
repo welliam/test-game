@@ -5,9 +5,14 @@ import Time
 
 
 type alias Model =
+    { player : Actor
+    , inputs : Inputs
+    }
+
+
+type alias Actor =
     { position : Position
     , movingFrom : Position
-    , inputs : Inputs
     , direction : Direction
     , walkingFrame : Int
     }

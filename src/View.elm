@@ -44,15 +44,15 @@ square ( positionX, positionY ) =
 view : Model -> Html.Html msg
 view model =
     let
-        { position, direction, movingFrom, walkingFrame } =
+        { player, inputs } =
             model
     in
     div []
-        [ div [] [ text ("position: " ++ toString model.position) ]
-        , div [] [ text ("movingFrom: " ++ toString model.movingFrom) ]
-        , div [] [ text ("walkingFrame: " ++ toString model.walkingFrame) ]
-        , div [] [ text ("direction: " ++ toString model.direction) ]
-        , div [] [ text ("inputs: " ++ toString model.inputs) ]
+        [ div [] [ text ("position: " ++ toString player.position) ]
+        , div [] [ text ("movingFrom: " ++ toString player.movingFrom) ]
+        , div [] [ text ("walkingFrame: " ++ toString player.walkingFrame) ]
+        , div [] [ text ("direction: " ++ toString player.direction) ]
+        , div [] [ text ("inputs: " ++ toString inputs) ]
         , Svg.svg
             [ Svg.Attributes.version "1.1"
             , Svg.Attributes.x "0"
@@ -62,7 +62,7 @@ view model =
             ]
             [ Svg.polygon
                 [ Svg.Attributes.fill "333333"
-                , square (getWalkingPixels movingFrom position walkingFrame)
+                , square (getWalkingPixels player.movingFrom player.position player.walkingFrame)
                 ]
                 []
             ]

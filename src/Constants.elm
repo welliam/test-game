@@ -29,11 +29,13 @@ initialPosition =
 
 init : ( Model, Cmd msg )
 init =
-    ( { position = initialPosition
-      , movingFrom = initialPosition
-      , direction = Down
+    ( { player =
+            { position = initialPosition
+            , movingFrom = initialPosition
+            , direction = Down
+            , walkingFrame = 0
+            }
       , inputs = initialInputs
-      , walkingFrame = 0
       }
     , Cmd.none
     )
