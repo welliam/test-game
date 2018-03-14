@@ -43,23 +43,21 @@ handleKeyUp model code =
         inputs =
             model.inputs
     in
-    resetDirection
-        (case code of
-            37 ->
-                { model | inputs = { inputs | left = False } }
+    case code of
+        37 ->
+            { model | inputs = { inputs | left = False } }
 
-            38 ->
-                { model | inputs = { inputs | up = False } }
+        38 ->
+            { model | inputs = { inputs | up = False } }
 
-            39 ->
-                { model | inputs = { inputs | right = False } }
+        39 ->
+            { model | inputs = { inputs | right = False } }
 
-            40 ->
-                { model | inputs = { inputs | down = False } }
+        40 ->
+            { model | inputs = { inputs | down = False } }
 
-            _ ->
-                model
-        )
+        _ ->
+            model
 
 
 handleKeyDown : Model -> Int -> Model
