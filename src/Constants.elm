@@ -41,6 +41,7 @@ init =
             , walkingFrame = 0
             }
       , inputs = initialInputs
+      , blocks = [ { top = 5, left = 5 }, { top = 7, left = 1 } ]
       }
     , Cmd.none
     )

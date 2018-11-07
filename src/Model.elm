@@ -7,6 +7,7 @@ import Time
 type alias Model =
     { player : Actor
     , inputs : Inputs
+    , blocks : List Position
     }
 
 

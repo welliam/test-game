@@ -20,7 +20,7 @@ decrementWalking model =
         player =
             model.player
     in
-    { model | player = { player | walkingFrame = player.walkingFrame - 1 } }
+        { model | player = { player | walkingFrame = player.walkingFrame - 1 } }
 
 
 resetDirection : Model -> Model
@@ -41,7 +41,7 @@ resetDirection model =
             else
                 model.player.direction
     in
-    { model | player = { player | direction = newDirection } }
+        { model | player = { player | direction = newDirection } }
 
 
 handleKeyUp : Model -> Int -> Model
@@ -50,21 +50,21 @@ handleKeyUp model code =
         inputs =
             model.inputs
     in
-    case code of
-        37 ->
-            { model | inputs = { inputs | left = False } }
+        case code of
+            37 ->
+                { model | inputs = { inputs | left = False } }
 
-        38 ->
-            { model | inputs = { inputs | up = False } }
+            38 ->
+                { model | inputs = { inputs | up = False } }
 
-        39 ->
-            { model | inputs = { inputs | right = False } }
+            39 ->
+                { model | inputs = { inputs | right = False } }
 
-        40 ->
-            { model | inputs = { inputs | down = False } }
+            40 ->
+                { model | inputs = { inputs | down = False } }
 
-        _ ->
-            model
+            _ ->
+                model
 
 
 handleKeyDown : Model -> Int -> Model
@@ -73,29 +73,29 @@ handleKeyDown model code =
         inputs =
             model.inputs
     in
-    case code of
-        37 ->
-            { model
-                | inputs = { inputs | left = True }
-            }
+        case code of
+            37 ->
+                { model
+                    | inputs = { inputs | left = True }
+                }
 
-        38 ->
-            { model
-                | inputs = { inputs | up = True }
-            }
+            38 ->
+                { model
+                    | inputs = { inputs | up = True }
+                }
 
-        39 ->
-            { model
-                | inputs = { inputs | right = True }
-            }
+            39 ->
+                { model
+                    | inputs = { inputs | right = True }
+                }
 
-        40 ->
-            { model
-                | inputs = { inputs | down = True }
-            }
+            40 ->
+                { model
+                    | inputs = { inputs | down = True }
+                }
 
-        _ ->
-            model
+            _ ->
+                model
 
 
 getMovingTo : Direction -> Position -> Position
@@ -123,14 +123,14 @@ startMoving model =
         player =
             moved.player
     in
-    { moved
-        | player =
-            { player
-                | walkingFrame = Constants.movementFrames
-                , movingFrom = player.position
-                , position = getMovingTo player.direction player.position
-            }
-    }
+        { moved
+            | player =
+                { player
+                    | walkingFrame = Constants.movementFrames
+                    , movingFrom = player.position
+                    , position = getMovingTo player.direction player.position
+                }
+        }
 
 
 willMove : Model -> Bool
@@ -138,8 +138,27 @@ willMove model =
     let
         { left, right, up, down } =
             model.inputs
+
+        wantsToMove =
+            left || right || up || down
+
+        { player } =
+            model
+
+        direction =
+            if left then
+                Left
+            else if right then
+                Right
+            else if up then
+                Up
+            else
+                Down
+
+        spaceIsFree =
+            not (List.member (getMovingTo direction player.position) model.blocks)
     in
-    left || right || up || down
+        wantsToMove && spaceIsFree
 
 
 isMoving : Model -> Bool
