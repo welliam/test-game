@@ -155,22 +155,22 @@ willMove model =
             else
                 Down
 
+        movingTo =
+            getMovingTo direction player.position
+
         spaceIsFreeFromBlocks =
-            (not (List.member (getMovingTo direction player.position) model.blocks))
+            not (List.member movingTo model.blocks)
 
         spaceIsFreeFromActors =
             not
-                (List.member
-                    (getMovingTo direction player.position)
-                    (List.map .position model.actors)
-                )
+                (List.member movingTo (List.map .position model.actors))
                 && not
-                    (List.member
-                        (getMovingTo direction player.position)
-                        (List.map .movingFrom model.actors)
-                    )
+                    (List.member movingTo (List.map .movingFrom model.actors))
+
+        spaceIsInBounds =
+            movingTo.top >= 0 && movingTo.top < 20 && movingTo.left >= 0 && movingTo.left < 20
     in
-        wantsToMove && spaceIsFreeFromBlocks && spaceIsFreeFromActors
+        wantsToMove && spaceIsFreeFromBlocks && spaceIsFreeFromActors && spaceIsInBounds
 
 
 isMoving : Model -> Bool
