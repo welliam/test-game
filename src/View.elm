@@ -44,7 +44,7 @@ square ( positionX, positionY ) =
 view : Model -> Html.Html msg
 view model =
     let
-        { player, inputs, blocks } =
+        { player, inputs, blocks, actors } =
             model
     in
         div []
@@ -77,6 +77,22 @@ view model =
                                     []
                             )
                             blocks
+                       )
+                    ++ (List.map
+                            (\actor ->
+                                Svg.polygon
+                                    ([ Svg.Attributes.fill "333333"
+                                     , square
+                                        (getWalkingPixels
+                                            actor.movingFrom
+                                            actor.position
+                                            actor.walkingFrame
+                                        )
+                                     ]
+                                    )
+                                    []
+                            )
+                            actors
                        )
                 )
             ]

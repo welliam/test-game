@@ -32,16 +32,21 @@ framesPerSecond =
     30
 
 
+playerAtPosition : Position -> Actor
+playerAtPosition position =
+    { position = position
+    , movingFrom = position
+    , direction = Down
+    , walkingFrame = 0
+    }
+
+
 init : ( Model, Cmd msg )
 init =
-    ( { player =
-            { position = initialPosition
-            , movingFrom = initialPosition
-            , direction = Down
-            , walkingFrame = 0
-            }
+    ( { player = playerAtPosition initialPosition
       , inputs = initialInputs
-      , blocks = [ { top = 5, left = 5 }, { top = 7, left = 1 } ]
+      , blocks = [ { top = 5, left = 5 } ]
+      , actors = [ playerAtPosition { top = 7, left = 1 } ]
       }
     , Cmd.none
     )

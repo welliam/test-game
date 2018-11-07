@@ -8,6 +8,7 @@ type alias Model =
     { player : Actor
     , inputs : Inputs
     , blocks : List Position
+    , actors : List Actor
     }
 
 
