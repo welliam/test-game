@@ -133,8 +133,8 @@ startMoving model =
         }
 
 
-willMove : Model -> Bool
-willMove model =
+playerWillMove : Model -> Bool
+playerWillMove model =
     let
         { left, right, up, down } =
             model.inputs
@@ -154,9 +154,15 @@ willMove model =
                 Up
             else
                 Down
+    in
+        wantsToMove && canMove player direction model
 
+
+canMove : Actor -> Direction -> Model -> Bool
+canMove actor direction model =
+    let
         movingTo =
-            getMovingTo direction player.position
+            getMovingTo direction actor.position
 
         spaceIsFreeFromBlocks =
             not (List.member movingTo model.blocks)
@@ -170,7 +176,7 @@ willMove model =
         spaceIsInBounds =
             movingTo.top >= 0 && movingTo.top < 20 && movingTo.left >= 0 && movingTo.left < 20
     in
-        wantsToMove && spaceIsFreeFromBlocks && spaceIsFreeFromActors && spaceIsInBounds
+        spaceIsFreeFromBlocks && spaceIsFreeFromActors && spaceIsInBounds
 
 
 isMoving : Model -> Bool
@@ -182,7 +188,7 @@ handleMovements : Model -> Model
 handleMovements model =
     if isMoving model then
         decrementWalking model
-    else if willMove model then
+    else if playerWillMove model then
         startMoving (resetDirection model)
     else
         resetDirection model
