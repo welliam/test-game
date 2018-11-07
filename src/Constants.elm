@@ -5,7 +5,7 @@ import Model exposing (..)
 
 movementFrames : Int
 movementFrames =
-    6
+    5
 
 
 size : Int

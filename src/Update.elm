@@ -117,20 +117,18 @@ getMovingTo direction { top, left } =
 startMoving : Model -> Model
 startMoving model =
     let
-        moved =
-            decrementWalking model
-
-        player =
-            moved.player
+        { player } =
+            model
     in
-        { moved
-            | player =
-                { player
-                    | walkingFrame = Constants.movementFrames
-                    , movingFrom = player.position
-                    , position = getMovingTo player.direction player.position
-                }
-        }
+        decrementWalking
+            { model
+                | player =
+                    { player
+                        | walkingFrame = Constants.movementFrames
+                        , movingFrom = player.position
+                        , position = getMovingTo player.direction player.position
+                    }
+            }
 
 
 playerWillMove : Model -> Bool
@@ -179,14 +177,14 @@ canMove actor direction model =
         spaceIsFreeFromBlocks && spaceIsFreeFromActors && spaceIsInBounds
 
 
-isMoving : Model -> Bool
-isMoving model =
-    model.player.walkingFrame /= 0
+isMoving : Actor -> Bool
+isMoving actor =
+    actor.walkingFrame /= 0
 
 
-handleMovements : Model -> Model
-handleMovements model =
-    if isMoving model then
+handlePlayerMovements : Model -> Model
+handlePlayerMovements model =
+    if isMoving model.player then
         decrementWalking model
     else if playerWillMove model then
         startMoving (resetDirection model)
@@ -198,7 +196,7 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         Tick time ->
-            ( handleMovements model, Cmd.none )
+            ( handlePlayerMovements model, Cmd.none )
 
         KeyUp msg ->
             ( handleKeyUp model msg, Cmd.none )
